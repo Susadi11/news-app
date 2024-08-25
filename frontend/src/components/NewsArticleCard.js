@@ -6,26 +6,28 @@ const NewsArticleCard = ({ article }) => {
     return null;
   }
 
-  // Log the article to inspect its content
-  console.log(article);
-
   return (
-    <div className="bg-white shadow-lg rounded-lg p-4 mb-4">
+    <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-4 flex">
       {article.urlToImage && (
-        <img className="w-full h-48 object-cover rounded-md" src={article.urlToImage} alt={article.title} />
+        <div className="w-1/3">
+          <img className="w-full h-full object-cover" src={article.urlToImage} alt={article.title} />
+        </div>
       )}
-      <h3 className="text-xl font-bold my-2">{article.title}</h3>
-      <p className="text-gray-600">Source: {article.source?.name || 'Unknown Source'}</p>
-      <p className="text-gray-600">Author: {article.author || 'Unknown'}</p>
-      <p className="text-gray-600">Date: {new Date(article.publishedAt).toLocaleDateString()}</p>
-      <p className="mt-2 text-gray-700">{article.description || 'No description available.'}</p>
-      <Link
-        to={`/article/${encodeURIComponent(article.url)}`}
-        state={{ article }}
-        className="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        View Article
-      </Link>
+      <div className="w-2/3 p-4">
+        <h3 className="text-xl font-bold mb-2 line-clamp-2">{article.title}</h3>
+        <p className="text-sm text-gray-600 mb-1">
+          {article.source?.name} - {article.author || 'Unknown Author'}
+        </p>
+        <p className="text-sm text-gray-600 mb-2">{new Date(article.publishedAt).toLocaleDateString()}</p>
+        <p className="text-sm text-gray-700 mb-3 line-clamp-3">{article.description || 'No description available.'}</p>
+        <Link
+          to={`/article/${encodeURIComponent(article.url)}`}
+          state={{ article }}
+          className="inline-block px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+        >
+          Read More
+        </Link>
+      </div>
     </div>
   );
 };
