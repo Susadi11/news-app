@@ -7,7 +7,11 @@ const NewsArticleCard = ({ article }) => {
   }
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-4 flex">
+    <Link 
+      to={`/article/${encodeURIComponent(article.url)}`}
+      state={{ article }}
+      className="block bg-white shadow-lg rounded-lg overflow-hidden mb-4 flex hover:bg-gray-100 transition"
+    >
       {article.urlToImage && (
         <div className="w-1/3">
           <img className="w-full h-full object-cover" src={article.urlToImage} alt={article.title} />
@@ -20,15 +24,8 @@ const NewsArticleCard = ({ article }) => {
         </p>
         <p className="text-sm text-gray-600 mb-2">{new Date(article.publishedAt).toLocaleDateString()}</p>
         <p className="text-sm text-gray-700 mb-3 line-clamp-3">{article.description || 'No description available.'}</p>
-        <Link
-          to={`/article/${encodeURIComponent(article.url)}`}
-          state={{ article }}
-          className="inline-block px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        >
-          Read More
-        </Link>
       </div>
-    </div>
+    </Link>
   );
 };
 
