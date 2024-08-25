@@ -1,37 +1,33 @@
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 const NewsArticleDetail = () => {
-  const { articleUrl } = useParams();
-  const [article, setArticle] = React.useState(null);
-
-  React.useEffect(() => {
-    const fetchArticle = async () => {
-      try {
-        const response = await axios.get(articleUrl);
-        setArticle(response.data);
-      } catch (error) {
-        console.error('Error fetching article:', error);
-      }
-    };
-    fetchArticle();
-  }, [articleUrl]);
+  const location = useLocation();
+  const article = location.state?.article;
 
   if (!article) {
-    return <div>Loading...</div>;
+    return <div className="text-center text-gray-700">No article data available.</div>;
   }
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto my-8 p-4 bg-white shadow-md rounded-lg">
       {article.urlToImage && (
-        <img src={article.urlToImage} alt={article.title} />
+        <img className="w-full h-64 object-cover rounded-md mb-4" src={article.urlToImage} alt={article.title} />
       )}
-      <h1>{article.title}</h1>
-      <p>Source: {article.source.name}</p>
-      <p>Author: {article.author}</p>
-      <p>Date: {article.publishedAt}</p>
-      <p>{article.content}</p>
+      <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
+      <p className="text-gray-600 mb-2">Source: {article.source.name}</p>
+      <p className="text-gray-600 mb-2">Author: {article.author}</p>
+      <p className="text-gray-600 mb-4">Date: {new Date(article.publishedAt).toLocaleDateString()}</p>
+      <p className="text-gray-800 mb-4">{article.content || 'No content available.'}</p>
+      <p className="text-gray-700 mb-4">{article.description || 'No description available.'}</p>
+      <a
+        href={article.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Read Full Article
+      </a>
     </div>
   );
 };

@@ -6,10 +6,12 @@ import NewsArticleDetail from './components/NewsArticleDetail';
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<NewsHeadlines />} />
-        <Route path="/article/:articleUrl" element={<NewsArticleDetail />} />
-      </Routes>
+      <div className="bg-gray-100 min-h-screen">
+        <Routes>
+          <Route path="/" element={<NewsHeadlines />} />
+          <Route path="/article/:articleUrl" element={<NewsArticleDetail />} />
+        </Routes>
+      </div>
     </Router>
   );
 };
