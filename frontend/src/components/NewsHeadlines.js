@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import NewsArticleCard from './NewsArticleCard';
 
 const NewsHeadlines = () => {
@@ -7,6 +7,7 @@ const NewsHeadlines = () => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
   const sources = ['bbc-news', 'cnn', 'the-washington-post', 'the-new-york-times', 'associated-press'];
 
@@ -21,58 +22,63 @@ const NewsHeadlines = () => {
             sources: source,
             apiKey: process.env.REACT_APP_NEWS_API_KEY,
             page: page,
-            pageSize: 5 // Fetch 5 articles per source
-          }
+            pageSize: 5, // Fetch 5 articles per source
+          },
         })
       );
 
       const responses = await Promise.all(promises);
-      const newArticles = responses.flatMap(response => 
+      const newArticles = responses.flatMap(response =>
         response.data.articles.map(article => ({
           ...article,
-          description: article.description || 'No description available.'
+          description: article.description || 'No description available.',
         }))
       );
 
-      setHeadlines(prevHeadlines => {
-        const updatedHeadlines = [...prevHeadlines, ...newArticles];
-        const uniqueHeadlines = updatedHeadlines.filter((article, index, self) =>
-          index === self.findIndex((t) => t.title === article.title)
-        );
-        return uniqueHeadlines;
-      });
+      setHeadlines(prevHeadlines => [...prevHeadlines, ...newArticles]);
 
-      setHasMore(newArticles.length > 0);
+      // Reset page count or reset to initial articles when no more articles are fetched
+      if (newArticles.length === 0) {
+        setHasMore(false);  // Ends scrolling when no more articles are available
+      } else {
+        setHasMore(true);
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching headlines:', error);
       setLoading(false);
     }
-  }, [page]);
+  }, [page, hasMore]);
 
   useEffect(() => {
     fetchHeadlines();
   }, [fetchHeadlines]);
 
-  const loadMore = () => {
-    setPage(prevPage => prevPage + 1);
-  };
+  const lastArticleRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   return (
     <div className="container mx-auto px-4">
-      {headlines.map((article, index) => (
-        <NewsArticleCard key={`${article.title}-${index}`} article={article} />
-      ))}
+      {headlines.map((article, index) => {
+        if (index === headlines.length - 1) {
+          return (
+            <div ref={lastArticleRef} key={`${article.title}-${index}`}>
+              <NewsArticleCard article={article} />
+            </div>
+          );
+        } else {
+          return <NewsArticleCard key={`${article.title}-${index}`} article={article} />;
+        }
+      })}
       {loading && <div className="text-center text-gray-600">Loading...</div>}
-      {!loading && hasMore && (
-        <button
-          onClick={loadMore}
-          className="block mx-auto mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Load More
-        </button>
-      )}
-      {!hasMore && <div className="text-center text-gray-600">No more articles to load.</div>}
     </div>
   );
 };
