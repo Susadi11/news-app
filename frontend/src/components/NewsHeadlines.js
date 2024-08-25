@@ -11,6 +11,7 @@ const NewsHeadlines = () => {
 
   const sources = ['bbc-news', 'cnn', 'the-washington-post', 'the-new-york-times', 'associated-press'];
 
+  // Fetch headlines from the API
   const fetchHeadlines = useCallback(async () => {
     if (!hasMore) return;
 
@@ -21,7 +22,7 @@ const NewsHeadlines = () => {
           params: {
             sources: source,
             apiKey: process.env.REACT_APP_NEWS_API_KEY,
-            page: page,
+            page,
             pageSize: 5, // Fetch 5 articles per source
           },
         })
@@ -35,14 +36,16 @@ const NewsHeadlines = () => {
         }))
       );
 
-      setHeadlines(prevHeadlines => [...prevHeadlines, ...newArticles]);
+      // Remove duplicate articles based on title
+      setHeadlines(prevHeadlines => {
+        const updatedHeadlines = [...prevHeadlines, ...newArticles];
+        const uniqueHeadlines = updatedHeadlines.filter((article, index, self) =>
+          index === self.findIndex(t => t.title === article.title)
+        );
+        return uniqueHeadlines;
+      });
 
-      // Reset page count or reset to initial articles when no more articles are fetched
-      if (newArticles.length === 0) {
-        setHasMore(false);  // Ends scrolling when no more articles are available
-      } else {
-        setHasMore(true);
-      }
+      setHasMore(newArticles.length > 0);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching headlines:', error);
@@ -50,10 +53,12 @@ const NewsHeadlines = () => {
     }
   }, [page, hasMore]);
 
+  // Load more headlines when page changes
   useEffect(() => {
     fetchHeadlines();
   }, [fetchHeadlines]);
 
+  // Observe the last article for infinite scroll
   const lastArticleRef = useCallback(node => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
@@ -79,6 +84,7 @@ const NewsHeadlines = () => {
         }
       })}
       {loading && <div className="text-center text-gray-600">Loading...</div>}
+      {!hasMore && <div className="text-center text-gray-600">No more articles to load.</div>}
     </div>
   );
 };

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// Component to display individual news articles as cards
 const NewsArticleCard = ({ article }) => {
+  // Return null if no article data is available
   if (!article || !article.title) {
     return null;
   }
@@ -22,8 +24,12 @@ const NewsArticleCard = ({ article }) => {
         <p className="text-sm text-gray-600 mb-1">
           {article.source?.name} - {article.author || 'Unknown Author'}
         </p>
-        <p className="text-sm text-gray-600 mb-2">{new Date(article.publishedAt).toLocaleDateString()}</p>
-        <p className="text-sm text-gray-700 mb-3 line-clamp-3">{article.description || 'No description available.'}</p>
+        <p className="text-sm text-gray-600 mb-2">
+          {new Date(article.publishedAt).toLocaleDateString()}
+        </p>
+        <p className="text-sm text-gray-700 mb-3 line-clamp-3">
+          {article.description || 'No description available.'}
+        </p>
       </div>
     </Link>
   );

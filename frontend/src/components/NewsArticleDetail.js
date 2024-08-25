@@ -1,10 +1,12 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 
+// Component to display detailed view of a selected news article
 const NewsArticleDetail = () => {
   const location = useLocation();
   const article = location.state?.article;
 
+  // Return a message if no article data is available
   if (!article) {
     return <div className="text-center text-gray-700">No article data available.</div>;
   }
