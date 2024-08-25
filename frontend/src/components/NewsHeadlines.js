@@ -11,7 +11,7 @@ const NewsHeadlines = () => {
     const fetchHeadlines = async () => {
       try {
         const response = await axios.get(
-          `https://newsapi.org/v2/top-headlines?country=us&apiKey=${process.env.REACT_APP_NEWS_API_KEY}&page=${page}&pageSize=10`
+          `https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=${process.env.REACT_APP_NEWS_API_KEY}&page=${page}&pageSize=10`
         );
         
         // Log the response to check if descriptions are present
