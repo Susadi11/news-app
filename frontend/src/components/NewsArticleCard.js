@@ -3,10 +3,19 @@ import { Link } from 'react-router-dom';
 
 // Component to display individual news articles as cards
 const NewsArticleCard = ({ article }) => {
-    // Return null if no article data is available
+  // Return null if no article data is available
   if (!article || !article.title) {
     return null;
   }
+
+  // Function to format the date as "24 Aug 2024"
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  };
 
   return (
     <Link
@@ -20,7 +29,7 @@ const NewsArticleCard = ({ article }) => {
           By {article.author || 'Unknown Author'} - {article.source?.name}
         </div>
         <p className="text-sm text-gray-600 mb-3">
-          {new Date(article.publishedAt).toLocaleDateString()}
+          {formatDate(article.publishedAt)}
         </p>
         <div className="flex">
           {article.urlToImage && (
