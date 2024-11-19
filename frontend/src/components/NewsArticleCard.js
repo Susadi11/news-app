@@ -52,4 +52,6 @@ const NewsArticleCard = ({ article }) => {
   );
 };
 
+
+
 export default NewsArticleCard;
