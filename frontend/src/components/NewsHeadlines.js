@@ -89,4 +89,6 @@ const NewsHeadlines = () => {
   );
 };
 
+//new comment
+
 export default NewsHeadlines;
